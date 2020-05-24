@@ -889,8 +889,10 @@ Vimwiki file.
     Commands are mapped to <A-Left> and <A-Right> respectively.
 
 
-*:VimwikiGenerateLinks*
-    Insert the links of all available wiki files into the current buffer.
+*:VimwikiGenerateLinks* [pattern]
+    Insert a list of links to all available wiki files into the current buffer.
+    If an optional 'pattern' is given as argument, the files will be searched
+    in the wiki root folder according to the 'pattern' as |globpath|
 
 *:VimwikiDiaryGenerateLinks*
     Delete old, insert new diary section into diary index file.
@@ -1398,7 +1400,7 @@ have two alternative options:
 Choose a folder on your hard drive and save MathJax in it. Then add to your
 HTML template the following line:
 
-<script type="text/javascript" src="<mathjax_folder>/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" src="<mathjax_folder>/es5/tex-chtml.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
 where <mathjax_folder> is the folder on your HD, as a relative path to the
 template folder. For instance, a sensible folder structure could be:
@@ -3239,13 +3241,13 @@ The default is '<Leader>w'.
 ------------------------------------------------------------------------------
 *g:vimwiki_auto_chdir*
 
-When set to 1, enables auto-cd feature.  Whenever Vimwiki page is opened,
-Vimwiki performs an |:lcd| to the Vimwiki folder to where the page belongs.
+When set to 1, enables auto-cd feature. Whenever Vimwiki page is opened,
+Vimwiki performs an |:lcd| to the root Vimwiki folder of the pages's wiki.
 
 
 Value           Description~
 0               Do not change directory.
-1               Change directory to Vimwiki folder on opening page.
+1               Change directory to root Vimwiki folder on opening page.
 
 Default: 0
 
@@ -3384,6 +3386,20 @@ The default is to enable all key mappings except the mouse: >
     \ }
 
 
+------------------------------------------------------------------------------
+*g:vimwiki_filetypes*
+
+A list of additional fileypes that should be registered to vimwiki files: >
+
+  let g:vimwiki_filetypes = ['markdown', 'pandoc']
+
+Would result in the filetype being set to `vimwiki.markdown.pandoc`. This can
+be used to enable third party plugins such as custom folding. WARNING: this
+option can allow other plugins to overwrite vimwiki settings and operation so
+take care when using it. Any plugin that uses a set filetype will be enabled.
+
+The default is `[ ]`
+
 ==============================================================================
 13. Getting help                                                *vimwiki-help*
 
@@ -3472,6 +3488,9 @@ Contributors and their Github usernames in roughly chronological order:
     - Abhinav Gupta (@abhinav)
     - Dave Gauer (@ratfactor)
     - Martin Tourneboeuf (@tinmarino)
+    - Mauro Morales (@mauromorales)
+    - Valtteri Vallius (@kaphula)
+    - Patrick Stockwell (@patstockwell)
 
 
 ==============================================================================
@@ -3554,6 +3573,8 @@ New:~
     * PR #377: Add horizontal alignment to tables.
     * PR #202: Don't override or display errors for existing keymappings.
     * PR #47: Optimize table formatting for large tables.
+    * PR #857: Make default template responsive
+    * PR #879: Generate links when diary & wiki dir are the same
 
 Removed:~
     * PR #698: Remove awa check triggering silent file edits.
@@ -3602,6 +3623,10 @@ Fixed:~
     * Issue #404: Don't conceal strikethrough character in tables.
     * Issue #318: Markdown syntax bold, italic, and italic/bold are now
       rendered correctly.
+    * Issue #835: Pressing enter on the dash of a markdown list causes an error.
+    * Issue #876: E684: list index out of range: 0, when creating a link containing a `.`.
+    * Issue #803: `:VimwikiGenerateLinks` for subdirectory only
+    * Issue #776: Command [count]o can't repeat in vimwiki
 
 
 2.4 (2019-03-24)~

@@ -3,6 +3,15 @@
 " Description: Utility functions
 " Home: https://github.com/vimwiki/vimwiki/
 
+
+" Execute: string v:count times
+function! vimwiki#u#count_exe(cmd) abort
+    for i in range( max([1, v:count]) )
+        exe a:cmd
+    endfor
+endfunction
+
+
 function! vimwiki#u#trim(string, ...) abort
   let chars = ''
   if a:0 > 0
@@ -18,6 +27,18 @@ endfunction
 function! vimwiki#u#cursor(lnum, cnum) abort
   exe a:lnum
   exe 'normal! 0'.a:cnum.'|'
+endfunction
+
+
+" Returns: OS name, human readable
+function! vimwiki#u#os_name() abort
+  if vimwiki#u#is_windows()
+    return 'Windows'
+  elseif vimwiki#u#is_macos()
+    return 'Mac'
+  else
+    return 'Linux'
+  endif
 endfunction
 
 
@@ -103,6 +124,32 @@ function! vimwiki#u#is_codeblock(lnum) abort
   let syn_g = synIDattr(synID(a:lnum,1,1),'name')
   if  syn_g =~# 'Vimwiki\(Pre.*\|IndentedCodeBlock\|Math.*\)'
         \ || (syn_g !~# 'Vimwiki.*' && syn_g !=? '')
+    return 1
+  else
+    return 0
+  endif
+endfunction
+
+" Sets the filetype to vimwiki
+" If g:vimwiki_filetypes variable is set
+" the filetype will be vimwiki.<ft1>.<ft2> etc.
+function! vimwiki#u#ft_set() abort
+  let ftypelist = vimwiki#vars#get_global('filetypes')
+  let ftype = 'vimwiki'
+  for ftypeadd in ftypelist
+    let ftype = ftype . '.' . ftypeadd
+  endfor
+  let &filetype = ftype
+endfunction
+
+" Returns: 1 if filetype is vimwiki, 0 else
+" If multiple fileytpes are in use 1 is returned only if the
+" first ft is vimwiki which should always be the case unless
+" the user manually changes it to something else
+function! vimwiki#u#ft_is_vw() abort
+  " Clause: is filetype defined
+  if &filetype ==# '' | return 0 | endif
+  if split(&filetype, '\.')[0] ==? 'vimwiki'
     return 1
   else
     return 0
